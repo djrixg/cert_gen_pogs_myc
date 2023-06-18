@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <title>Generate Certificate</title>
-  <script src="js/pdf-lib.min.js"></script>
+  <script src="pdf-lib.min.js"></script>
   <!-- <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script> -->
   <script>
     const textboxWidth = 340;
@@ -11,7 +11,7 @@
 
     async function generateCertificate(fullName) {
       const { PDFDocument, degrees, rgb } = PDFLib;
-      const imageUrl = 'img/coa.jpg';
+      const imageUrl = 'coa.jpg';
       const imageBytes = await fetch(imageUrl).then((res) => res.arrayBuffer());
       const pdfDoc = await PDFDocument.create();
       const page = pdfDoc.addPage();
