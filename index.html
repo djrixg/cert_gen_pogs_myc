@@ -9,6 +9,9 @@
     const fontSize = 32.5;
     const yPositionPercent = 62;
 
+    var url = new URL(window.location.href);
+    var params = new URLSearchParams(url.search);
+    var name = params.get('n');
     async function generateCertificate(fullName) {
       const { PDFDocument, degrees, rgb } = PDFLib;
       const imageUrl = 'coa.jpg';
@@ -56,11 +59,8 @@
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+      window.location.href = "https://pogs2023midyear.com/thank-you/?n="+name;
     }
-
-    var url = new URL(window.location.href);
-    var params = new URLSearchParams(url.search);
-    var name = params.get('n');
     if (name) {
       generateCertificate(name);
     }
