@@ -59,7 +59,9 @@
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      window.location.href = "https://pogs2023midyear.com/thank-you/?n="+name;
+      if(!params.get('nn')){
+        window.location.href = "https://pogs2023midyear.com/thank-you/?n="+name;
+      }
     }
     if (name) {
       generateCertificate(name);
