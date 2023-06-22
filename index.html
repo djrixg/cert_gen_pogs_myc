@@ -29,7 +29,10 @@
   </head>
   <body>
     <div class="container text-center">
-      <button class="btn btn-success" onclick="generateCertificate()">Download Certificate</button>
+      <button class="btn btn-success" id="generateBtn" onclick="generateCertificate()">Download Certificate</button>
+      <div class="spinner-border text-success d-none" id="loadingSpinner" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
     </div>
     <!-- <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script> -->
     <script src="pdf-lib.min.js"></script>
@@ -42,8 +45,15 @@
       var url = new URL(window.location.href);
       var params = new URLSearchParams(url.search);
       var name = params.get('n');
-      
+
       async function generateCertificate() {
+        const generateBtn = document.getElementById('generateBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        generateBtn.disabled = true;
+        generateBtn.classList.add('d-none');
+        loadingSpinner.classList.remove('d-none');
+
         fullName = name;
         const { PDFDocument, degrees, rgb } = PDFLib;
         const imageUrl = 'coa.jpg';
@@ -80,6 +90,10 @@
 
         const pdfBytes = await pdfDoc.save();
         downloadPDF(pdfBytes, 'certificate_' + fullName + '.pdf');
+
+        generateBtn.disabled = false;
+        generateBtn.classList.remove('d-none');
+        loadingSpinner.classList.add('d-none');
       }
 
       function downloadPDF(pdfBytes, fileName) {
@@ -102,12 +116,6 @@
         //   window.location.href = "https://pogs2023midyear.com/thank-you/?n=" + name;
         // }
       }
-
-      const button = document.querySelector('.btn');
-      button.addEventListener('click', generateCertificate);
-      // if (name) {
-      //   // generateCertificate(name);
-      // }
     </script>
   </body>
 </html>
