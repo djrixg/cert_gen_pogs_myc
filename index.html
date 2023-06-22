@@ -1,9 +1,30 @@
 <!DOCTYPE html>
 <html>
-  <title>Generate Certificate</title>
-  <script src="pdf-lib.min.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script> -->
-  <script>
+  <head>
+    <title>Generate Certificate</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <style>
+      body,
+      html {
+        height: 100%;
+      }
+      
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container text-center">
+      <button class="btn btn-success" onclick="generateCertificate()">Download Certificate</button>
+    </div>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script> -->
+    <script src="pdf-lib.min.js"></script>
+    <script>
+      
     const textboxWidth = 340;
     const textboxHeight = 100;
     const fontSize = 32.5;
@@ -12,7 +33,8 @@
     var url = new URL(window.location.href);
     var params = new URLSearchParams(url.search);
     var name = params.get('n');
-    async function generateCertificate(fullName) {
+    async function generateCertificate() {
+      fullName = name;
       const { PDFDocument, degrees, rgb } = PDFLib;
       const imageUrl = 'coa.jpg';
       const imageBytes = await fetch(imageUrl).then((res) => res.arrayBuffer());
@@ -59,12 +81,13 @@
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      if(!params.get('nn')){
+      // if(!params.get('nn')){
         window.location.href = "https://pogs2023midyear.com/thank-you/?n="+name;
-      }
+      // }
     }
-    if (name) {
-      generateCertificate(name);
-    }
-  </script>
+    // if (name) {
+    //   // generateCertificate(name);
+    // }
+    </script>
+  </body>
 </html>
