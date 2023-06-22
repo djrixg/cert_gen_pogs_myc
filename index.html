@@ -34,72 +34,80 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script> -->
     <script src="pdf-lib.min.js"></script>
     <script>
+      const textboxWidth = 340;
+      const textboxHeight = 100;
+      const fontSize = 32.5;
+      const yPositionPercent = 62;
+
+      var url = new URL(window.location.href);
+      var params = new URLSearchParams(url.search);
+      var name = params.get('n');
       
-    const textboxWidth = 340;
-    const textboxHeight = 100;
-    const fontSize = 32.5;
-    const yPositionPercent = 62;
+      async function generateCertificate() {
+        fullName = name;
+        const { PDFDocument, degrees, rgb } = PDFLib;
+        const imageUrl = 'coa.jpg';
+        const imageBytes = await fetch(imageUrl).then((res) => res.arrayBuffer());
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage();
+        const { width, height } = page.getSize();
+        const image = await pdfDoc.embedJpg(imageBytes);
+        page.drawImage(image, {
+          x: 0,
+          y: 0,
+          width: width,
+          height: height,
+        });
 
-    var url = new URL(window.location.href);
-    var params = new URLSearchParams(url.search);
-    var name = params.get('n');
-    async function generateCertificate() {
-      fullName = name;
-      const { PDFDocument, degrees, rgb } = PDFLib;
-      const imageUrl = 'coa.jpg';
-      const imageBytes = await fetch(imageUrl).then((res) => res.arrayBuffer());
-      const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage();
-      const { width, height } = page.getSize();
-      const image = await pdfDoc.embedJpg(imageBytes);
-      page.drawImage(image, {
-        x: 0,
-        y: 0,
-        width: width,
-        height: height,
-      });
+        const yPosition = (height * yPositionPercent) / 100;
+        const textX = (width - textboxWidth) / 2;
+        const textY = yPosition + (textboxHeight - fontSize) / 2;
 
-      const yPosition = (height * yPositionPercent) / 100;
-      const textX = (width - textboxWidth) / 2;
-      const textY = yPosition + (textboxHeight - fontSize) / 2;
+        const textOptions = {
+          x: textX,
+          y: textY,
+          size: fontSize,
+          color: rgb(0.078, 0.451, 0.231), // Updated color value
+          font: await pdfDoc.embedFont('Helvetica-Bold'),
+          opacity: 1,
+          maxWidth: textboxWidth,
+          maxHeight: textboxHeight,
+          lineHeight: fontSize,
+          align: 'center',
+        };
 
-      const textOptions = {
-        x: textX,
-        y: textY,
-        size: fontSize,
-        color: rgb(0.078, 0.451, 0.231), // Updated color value
-        font: await pdfDoc.embedFont('Helvetica-Bold'),
-        opacity: 1,
-        maxWidth: textboxWidth,
-        maxHeight: textboxHeight,
-        lineHeight: fontSize,
-        align: 'center',
-      };
+        const pageTextBox = page.drawText(fullName, textOptions);
 
-      const pageTextBox = page.drawText(fullName, textOptions);
+        const pdfBytes = await pdfDoc.save();
+        downloadPDF(pdfBytes, 'certificate_' + fullName + '.pdf');
+      }
 
-      const pdfBytes = await pdfDoc.save();
-      downloadPDF(pdfBytes, 'certificate_' + fullName + '.pdf');
-    }
+      function downloadPDF(pdfBytes, fileName) {
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
 
-    function downloadPDF(pdfBytes, fileName) {
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      // if(!params.get('nn')){
-        // window.location.href = "https://pogs2023midyear.com/thank-you/?n="+name;
+        // Set Content-Disposition header to force download (optional)
+        a.setAttribute('data-downloadurl', `application/pdf:${fileName}:${url}`);
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        // Redirect to a thank-you page (optional)
+        // if (!params.get('nn')) {
+        //   window.location.href = "https://pogs2023midyear.com/thank-you/?n=" + name;
+        // }
+      }
+
+      const button = document.querySelector('.btn');
+      button.addEventListener('click', generateCertificate);
+      // if (name) {
+      //   // generateCertificate(name);
       // }
-    }
-    const button = document.querySelector('.btn');
-    button.addEventListener('click', generateCertificate);
-    // if (name) {
-    //   // generateCertificate(name);
-    // }
     </script>
   </body>
 </html>
